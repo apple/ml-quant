@@ -1,0 +1,72 @@
+# Validation set evaluation metrics:
+# Top-1 Accuracy: 77.8%
+# Top-5 Accuracy: 93.9%
+seed: null
+environment:
+    platform: local
+    ngpus: 1
+    cuda:
+        cudnn_deterministic: false
+        cudnn_benchmark: true
+data:
+    dataset_path: data/cifar100/
+    train_batch_size: 128
+    test_batch_size: 100
+    workers: 16
+model:
+    architecture: resnet
+    loss: cross_entropy                         # select from {'cross_entropy', 'nll_loss', 'kl_div'}, see get_loss_fn() docs for details.
+    arch_config:
+        moving_average_mode: 'off'              # select from {'off', 'eval_only', 'train_and_eval'}, see ActivationQuantizer docs for details.
+        moving_average_momentum: 0.99
+        block: regular                          # select from {'regular', 'xnor'}, see QResNet docs for details.
+        layer0:
+            n_in_channels: 64
+            kernel_size: 3
+            stride: 1
+            padding: 1
+            bias: false
+            maxpool:
+                type: identity
+        layer1:
+            x_quant: fp                         # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+            w_quant: fp                         # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+            clamp:
+                kind: identity                  # select from {'identity', 'symmetric'}, see QuantConv2d docs for details.
+        layer2:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        layer3:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        layer4:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        nonlins: ['relu', 'relu']               # A list of 2 strings where each string is in {'relu', 'prelu', 'identity'}.
+        num_blocks: [2, 2, 2, 2]
+        output_classes: 100
+optimization:
+    epochs: 200
+    optimizer:
+        algorithm: sgd                          # select from {'sgd', 'adam', 'adadelta'}, see get_optimizer() docs for details.
+        lr: 0.1
+        momentum: 0.9
+        nesterov: true
+        weight_decay: 0.0005
+    lr_scheduler:
+        scheduler: step_lr                      # select from {'step_lr', 'multi_step_lr', 'linear_lr', 'lambda_lr'}, see get_lr_scheduler() docs for details.
+        step_size: 60
+        gamma: 0.2
+log:
+    level: INFO
+    interval: 100
+    tensorboard: true
+    tensorboard_root: runs/
+    root_experiments_dir: experiments/
+    save_model_freq: 80

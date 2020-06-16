@@ -1,0 +1,75 @@
+# Validation set evaluation metrics:
+# Top-1 Accuracy: 69.8%
+# Top-5 Accuracy: 89.3%
+seed: null
+environment:
+    platform: local
+    ngpus: 8
+    cuda:
+        cudnn_deterministic: false
+        cudnn_benchmark: true
+data:
+    dataset_path: data/imagenet/
+    train_batch_size: 256
+    test_batch_size: 256
+    workers: 16
+model:
+    architecture: resnet
+    loss: cross_entropy                         # select from {'cross_entropy', 'nll_loss', 'kl_div'}, see get_loss_fn() docs for details.
+    arch_config:
+        moving_average_mode: 'off'              # select from {'off', 'eval_only', 'train_and_eval'}, see ActivationQuantizer docs for details.
+        moving_average_momentum: 0.99
+        block: regular                          # select from {'regular', 'xnor'}, see QResNet docs for details.
+        layer0:
+            n_in_channels: 64
+            kernel_size: 7
+            stride: 2
+            padding: 3
+            bias: false
+            maxpool:
+                type: maxpool2d
+                kernel_size: 3
+                stride: 2
+                padding: 1
+        layer1:
+            x_quant: fp                         # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+            w_quant: fp                         # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+            clamp:
+                kind: identity                  # select from {'identity', 'symmetric'}, see QuantConv2d docs for details.
+        layer2:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        layer3:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        layer4:
+            x_quant: fp
+            w_quant: fp
+            clamp:
+                kind: identity
+        nonlins: ['relu', 'relu']               # A list of 2 strings where each string is in {'relu', 'prelu', 'identity'}.
+        num_blocks: [2, 2, 2, 2]
+        output_classes: 1000
+optimization:
+    epochs: 100
+    optimizer:
+        algorithm: sgd                          # select from {'sgd', 'adam', 'adadelta'}, see get_optimizer() docs for details.
+        lr: 0.1
+        momentum: 0.9
+        nesterov: true
+        weight_decay: 0.0001
+    lr_scheduler:
+        scheduler: step_lr                      # select from {'step_lr', 'multi_step_lr', 'linear_lr', 'lambda_lr'}, see get_lr_scheduler() docs for details.
+        gamma: 0.1
+        step_size: 30
+log:
+    level: INFO
+    interval: 80
+    tensorboard: true
+    tensorboard_root: runs/
+    root_experiments_dir: experiments/
+    save_model_freq: 20

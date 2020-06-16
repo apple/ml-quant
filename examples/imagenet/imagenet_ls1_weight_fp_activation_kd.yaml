@@ -1,0 +1,88 @@
+# Validation set evaluation metrics:
+# Top-1 Accuracy: 66.1%
+# Top-5 Accuracy: 86.5%
+seed: null
+environment:
+    platform: local
+    ngpus: 8
+    cuda:
+        cudnn_deterministic: false
+        cudnn_benchmark: true
+data:
+    dataset_path: data/imagenet/
+    train_batch_size: 256
+    test_batch_size: 256
+    workers: 16
+model:
+    architecture: resnet
+    loss: cross_entropy
+    arch_config:
+        moving_average_mode: 'off'
+        moving_average_momentum: 0.99
+        block: xnor
+        layer0:
+            n_in_channels: 64
+            kernel_size: 7
+            stride: 2
+            padding: 3
+            bias: false
+            maxpool:
+                type: maxpool2d
+                kernel_size: 3
+                stride: 2
+                padding: 1
+        layer1:
+            x_quant: fp
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer2:
+            x_quant: fp
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer3:
+            x_quant: fp
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer4:
+            x_quant: fp
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        nonlins: ['prelu', 'prelu']
+        num_blocks: [2, 2, 2, 2]
+        output_classes: 1000
+    kd_config:
+        teacher_config_path: experiments/imagenet-teacher/config.yaml
+        teacher_checkpoint_path: experiments/imagenet-teacher/checkpoints/checkpoint_100.pt
+        freeze_teacher: true
+        train_mode: true
+        criterion_config:
+            temperature: 1
+            teacher_correction: false
+optimization:
+    epochs: 240
+    optimizer:
+        algorithm: adam
+        lr: 0.0002
+        weight_decay: 0
+    lr_scheduler:
+        scheduler: linear_lr
+        min_lr: 2e-7
+log:
+    level: INFO
+    interval: 100
+    tensorboard: true
+    tensorboard_root: runs/
+    root_experiments_dir: experiments/
+    save_model_freq: 20

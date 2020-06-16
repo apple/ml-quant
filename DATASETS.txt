@@ -1,0 +1,8 @@
+The MNIST, CIFAR-10, CIFAR-100 and ImageNet datasets are not Apple owned or created datasets.
+
+Your use of such datasets is subject to the third party’s rights and licensing terms.
+
+Below are links to the original datasets for your review:
+* MNIST: http://yann.lecun.com/exdb/mnist/
+* CIFAR-10 and CIFAR-100: https://www.cs.toronto.edu/~kriz/cifar.html
+* ImageNet: http://image-net.org/download-faq

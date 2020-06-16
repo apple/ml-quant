@@ -1,0 +1,81 @@
+# Validation set evaluation metrics:
+# Top-1 Accuracy: 64.5%
+# Top-5 Accuracy: 87.7%
+seed: null
+environment:
+    platform: local
+    ngpus: 1
+    cuda:
+        cudnn_deterministic: false
+        cudnn_benchmark: true
+data:
+    dataset_path: data/cifar100/
+    train_batch_size: 128
+    test_batch_size: 100
+    workers: 16
+model:
+    architecture: resnet
+    loss: cross_entropy
+    arch_config:
+        moving_average_mode: 'off'
+        moving_average_momentum: 0.99
+        block: xnor
+        layer0:
+            n_in_channels: 64
+            kernel_size: 3
+            stride: 1
+            padding: 1
+            bias: false
+            maxpool:
+                type: identity
+        layer1:
+            x_quant: ls-1
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer2:
+            x_quant: ls-1
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer3:
+            x_quant: ls-1
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        layer4:
+            x_quant: ls-1
+            w_quant: ls-1
+            clamp:
+                kind: symmetric
+                alpha: 2
+            double_shortcut: true
+        nonlins: ['relu', 'relu']
+        num_blocks: [2, 2, 2, 2]
+        output_classes: 100
+optimization:
+    epochs: 350
+    optimizer:
+        algorithm: adam
+        lr: 0.0002
+        weight_decay: 0.0
+    lr_scheduler:
+        scheduler: multi_step_lr
+        milestones:
+            - 150
+            - 250
+            - 320
+        gamma: 0.1
+log:
+    level: INFO
+    interval: 100
+    tensorboard: true
+    tensorboard_root: runs/
+    root_experiments_dir: experiments/
+    save_model_freq: 80

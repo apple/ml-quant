@@ -1,0 +1,44 @@
+# Validation set evaluation metrics:
+# Top-1 Accuracy: 99.4%
+# Top-5 Accuracy: 100.0%
+seed: null
+environment:
+    platform: local
+    cuda:
+        cudnn_deterministic: true
+        cudnn_benchmark: false
+data:
+    dataset_path: data/mnist/
+    download: true
+    train_batch_size: 64
+    test_batch_size: 5000
+    workers: 4
+model:
+    architecture: lenet5
+    loss: nll_loss                              # select from {'cross_entropy', 'nll_loss', 'kl_div'}, see get_loss_fn() docs for details.
+    arch_config:
+        moving_average_mode: 'off'              # select from {'off', 'eval_only', 'train_and_eval'}, see ActivationQuantizer docs for details.
+        moving_average_momentum: 0.99
+        x_quant: fp                             # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+        w_quant: fp                             # select from {'fp', 'ls-1', 'ls-T', 'ls-2', 'gf-1', 'gf-2', 'gf-3' (any `gf-k`)}, see QuantConv2d docs for details.
+        clamp:
+            kind: identity                      # select from {'identity', 'symmetric'}, see QuantConv2d docs for details.
+        conv1_filters: 20
+        conv2_filters: 50
+        output_classes: 10
+optimization:
+    epochs: 10
+    optimizer:
+        algorithm: adadelta                     # select from {'sgd', 'adam', 'adadelta'}, see get_optimizer() docs for details.
+        lr: 1.0
+    lr_scheduler:
+        scheduler: step_lr                      # select from {'step_lr', 'multi_step_lr', 'linear_lr', 'lambda_lr'}, see get_lr_scheduler() docs for details.
+        step_size: 1
+        gamma: 0.7
+log:
+    level: INFO
+    interval: 10
+    tensorboard: true
+    tensorboard_root: runs/
+    root_experiments_dir: experiments/
+    save_model_freq: 2

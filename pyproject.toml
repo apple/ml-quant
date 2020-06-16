@@ -1,0 +1,40 @@
+#
+# For licensing see accompanying LICENSE file.
+# Copyright (C) 2020 Apple Inc. All Rights Reserved.
+#
+
+# Tell pip to use flit to build this package
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "quant"
+author = "Hadi Pouransari, Zhucheng Tu"
+author-email = "mpouransari@apple.com, zhucheng_tu@apple.com"
+
+license = "Apple Sample Code License"
+requires-python = ">=3.6,<8"
+description-file="README.md"
+
+# List here all your dependencies
+requires = [
+]
+
+[tool.flit.metadata.requires-extra]
+# Packages required for testing
+test = [
+    "pytest",
+    "pytest-mypy",
+    "pytest-flake8",
+    "pytest-cov",
+    "flake8-docstrings",
+    "flake8-copyright",
+]
+# Packages required to build the documentation
+doc = [
+    "sphinx",
+    "sphinx-rtd-theme",
+    "sphinx-autodoc-typehints",
+    "m2r"
+]

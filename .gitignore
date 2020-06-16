@@ -1,0 +1,8 @@
+*.pyc
+*.swp
+.coverage
+.mypy_cache/
+.venv/
+.idea/
+dist/
+runs/
