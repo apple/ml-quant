@@ -29,7 +29,7 @@ One can always use ``--help`` if running any of the example scripts to see the a
 ``--config <path to YAML config file>`` specifies the path to the yaml config file.
 
 The experiment can be given a name with ``--experiment-name <name>``.
-If no name is specified a name is chosen based on the dataset name and time.
+If no name is specified, a name is chosen based on the dataset name and time.
 
 ``--ngpus <number of GPUs>`` can be used to set or override the number of GPUs setting
 in the config.
